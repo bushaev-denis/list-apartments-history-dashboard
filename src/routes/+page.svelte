@@ -5,64 +5,105 @@
 	import { getDataset } from '$lib/helpers/get-dataset';
 	import Selector from '$lib/components/selector.svelte';
 	import dayjs from 'dayjs';
+	import customParseFormat from 'dayjs/plugin/customParseFormat';
+	import 'dayjs/locale/ru';
+	import Input from '$lib/components/input.svelte';
+	dayjs.extend(customParseFormat);
+	dayjs.locale('ru');
 
-	let type: AvgType = AvgType.median;
+	let datasets: Awaited<ReturnType<typeof getDataset>>;
+	let avgType: AvgType = AvgType.median;
+	let area: string = '1';
+
+	async function setDatasets(area: string, type: AvgType) {
+		if (!browser) return;
+
+		datasets = (await getDataset(type)).map((dataset) => ({
+			...dataset,
+			data: dataset.data.map((i) => ({ ...i, y: i.y * (+area || 1) }))
+		}));
+	}
+
+	$: setDatasets(area, avgType);
 </script>
 
 <div class="grid gap-4">
-	<Selector
-		label="Тип усреднения"
-		id="type"
-		options={[
-			[AvgType.median, 'Медиана'],
-			[AvgType.avg, 'Среднее']
-		]}
-		bind:value={type}
-	/>
+	<div class="flex gap-8">
+		<Selector
+			label="Тип усреднения"
+			id="avgType"
+			options={[
+				[AvgType.median, 'Медиана'],
+				[AvgType.avg, 'Среднее']
+			]}
+			bind:value={avgType}
+		/>
+
+		<Input bind:value={area} id="area" label="Площадь" />
+	</div>
 
 	<div>
 		{#if browser}
-			{#await getDataset(type) then datasets}
-				<Chart
-					{datasets}
-					options={{
-						scales: {
-							y: {
-								ticks: {
-									callback: (v) => `$${v}`
+			<Chart
+				{datasets}
+				options={{
+					scales: {
+						x: {
+							type: 'time',
+							time: {
+								parser: 'yyyy-mm-dd',
+								unit: 'month',
+								displayFormats: { day: 'DD MMM', quarter: 'MMM YYYY' }
+							}
+						},
+						y: {
+							ticks: { callback: (v) => `$${v}` }
+						}
+					},
+					plugins: {
+						tooltip: {
+							callbacks: {
+								title: (i) => {
+									const d = dayjs(i[0].label, 'YYYY-MM-DD');
+									return d.format('DD MMMM' + (dayjs().isSame(d, 'year') ? '' : ' YYYY'));
+								},
+								label: (i) => {
+									const { label } = i.dataset;
+									// @ts-ignore -- bad types from chart.js
+									const { y } = i.raw;
+									return `${label}: $${+y.toFixed(2)}/м²`;
 								}
 							}
 						},
-						plugins: {
-							tooltip: {
-								callbacks: {
-									title: (i) => dayjs(i[0].label).format('DD.MM.YYYY')
+						legend: {
+							onClick: (e, item, legend) => {
+								const idx = item.datasetIndex;
+								if (!idx) return;
+
+								const ci = legend.chart;
+								const savedLegend = JSON.parse(
+									localStorage.getItem('hidden-chart-legend-items') || '[]'
+								);
+
+								const districtName = item.text;
+								// @ts-ignore -- bad types from chart.js
+								const districtId = District[districtName];
+
+								if (ci.isDatasetVisible(idx)) {
+									ci.hide(idx);
+									item.hidden = true;
+									savedLegend.push(districtId);
+								} else {
+									ci.show(idx);
+									item.hidden = false;
+									savedLegend.splice(savedLegend.indexOf(districtId), 1);
 								}
-							},
-							legend: {
-								onClick: (e, item, legend) => {
-									const index = item.datasetIndex;
-									const ci = legend.chart;
-									const savedLegend = JSON.parse(
-										localStorage.getItem('hidden-chart-legend-items') || '[]'
-									);
-									if (ci.isDatasetVisible(index)) {
-										ci.hide(index);
-										item.hidden = true;
-										console.log(item);
-										savedLegend.push(District[item.text]);
-									} else {
-										ci.show(index);
-										item.hidden = false;
-										savedLegend.splice(savedLegend.indexOf(District[item.text]), 1);
-									}
-									localStorage.setItem('hidden-chart-legend-items', JSON.stringify(savedLegend));
-								}
+								localStorage.setItem('hidden-chart-legend-items', JSON.stringify(savedLegend));
 							}
 						}
-					}}
-				/>
-			{/await}
+					}
+				}}
+			/>
 		{/if}
 	</div>
 </div>

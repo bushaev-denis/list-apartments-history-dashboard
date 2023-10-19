@@ -1,6 +1,12 @@
 import { PUBLIC_DATA_FILE_PATH } from '$env/static/public';
 import { AvgType, District } from '$lib/types';
 
+type Dataset = {
+	label: string;
+	data: { x: string; y: number }[];
+	hidden: boolean;
+};
+
 export async function getDataset(type: AvgType) {
 	const res = await fetch(PUBLIC_DATA_FILE_PATH);
 
@@ -19,12 +25,12 @@ export async function getDataset(type: AvgType) {
 
 			return {
 				label: District[districtId as District],
-				data: districtData.map((item) => ({
-					x: `${item[0]} 00:00:00`,
-					y: item[type === AvgType.avg ? 1 : 2]
+				data: districtData.map(([date, avg, median]) => ({
+					x: date,
+					y: type === 'avg' ? avg : median
 				})),
 				hidden: hiddenItems.includes(districtId)
 			};
 		})
-		.filter((i) => typeof i !== 'undefined');
+		.filter((i): i is Dataset => typeof i !== 'undefined');
 }

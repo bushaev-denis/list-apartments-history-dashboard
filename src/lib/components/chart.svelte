@@ -41,29 +41,18 @@
 				maintainAspectRatio: false,
 				scales: {
 					x: {
-						type: 'time',
-						time: {
-							unit: 'month',
-							displayFormats: { day: 'DD MMM', quarter: 'MMM YYYY' }
-						},
 						grid: { color: theme.line, tickColor: theme.line },
-						ticks: { backdropColor: theme.line },
+						ticks: { color: theme.text, backdropColor: theme.line },
 						border: { color: theme.line }
 					},
 					y: {
 						grid: { color: theme.line, tickColor: theme.line },
-						ticks: {
-							color: theme.text,
-							backdropColor: theme.line
-						},
+						ticks: { color: theme.text, backdropColor: theme.line },
 						border: { color: theme.line }
 					}
 				},
 				plugins: {
-					legend: {
-						position: 'bottom',
-						labels: { color: theme.text }
-					},
+					legend: { position: 'bottom', labels: { color: theme.text } },
 					colors: { enabled: false }
 				},
 				adapters: { date: { locale: ru } }
