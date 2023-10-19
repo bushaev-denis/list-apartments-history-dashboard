@@ -25,6 +25,14 @@
 	}
 
 	$: setDatasets(area, avgType);
+
+	// TODO: remove
+	function remarkDays() {
+		const d = +dayjs().diff(dayjs('2023-10-17'), 'day');
+		const p = new Intl.PluralRules('ru');
+		const w = { zero: 'дней', two: 'дня', one: 'день', few: 'дня', many: 'дней', other: 'дней' };
+		return `${d} ${w[p.select(d)]}`;
+	}
 </script>
 
 <div class="grid gap-4">
@@ -105,5 +113,15 @@
 				}}
 			/>
 		{/if}
+		<div
+			class="text-slate-900/75 dark:text-slate-100/75 italic text-xs border-l-4 border-orange-400 px-4 pb-2"
+		>
+			<p class="text-xl text-orange-500">⚠️</p>
+			<p>Ремарка, почему это выглядит как будто-бы что-то не работает:</p>
+			<p>
+				Данных пока мало (всего за {remarkDays()}) но они будут обновляться каждый день
+			</p>
+			<p class="opacity-50">// TODO: убрать, когда эта ремарка будет ненужна</p>
+		</div>
 	</div>
 </div>
