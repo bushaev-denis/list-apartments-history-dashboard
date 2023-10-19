@@ -43,6 +43,7 @@
 					[ColorScheme.Light, '🌞 Дневная'],
 					[ColorScheme.Dark, '🌚 Ночная']
 				]}
+				useLocalStorage={false}
 			/>
 		</header>
 

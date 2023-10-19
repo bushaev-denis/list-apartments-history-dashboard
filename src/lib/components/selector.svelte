@@ -11,13 +11,15 @@
 	let c: string | undefined = undefined;
 	export { c as class };
 	export let id: string | undefined = undefined;
+	export let useLocalStorage = false;
 
 	function _onChange(e: ChangeEvent) {
-		window.localStorage.setItem(`select-${id}-value`, e.currentTarget.value);
+		useLocalStorage && window.localStorage.setItem(`select-${id}-value`, e.currentTarget.value);
 		onchange?.(e);
 	}
 
 	onMount(() => {
+		if (!useLocalStorage) return;
 		const currentValue = window.localStorage.getItem(`select-${id}-value`);
 		if (currentValue) {
 			value = currentValue;
