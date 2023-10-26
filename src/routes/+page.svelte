@@ -8,6 +8,7 @@
 	import customParseFormat from 'dayjs/plugin/customParseFormat';
 	import 'dayjs/locale/ru';
 	import Input from '$lib/components/input.svelte';
+	import { onMount } from 'svelte';
 	dayjs.extend(customParseFormat);
 	dayjs.locale('ru');
 
@@ -25,6 +26,19 @@
 	}
 
 	$: setDatasets(area, avgType);
+
+	onMount(() => {
+		const handler = () => setDatasets(area, avgType);
+
+		const i = setInterval(handler, 60 * 60 * 1000)
+
+		window.addEventListener('focus', handler)
+
+		return () => {
+			clearInterval(i);
+			window.removeEventListener('focus', handler)
+		}
+	})
 
 	// TODO: remove
 	function remarkDays() {
