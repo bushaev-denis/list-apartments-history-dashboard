@@ -21,7 +21,7 @@
 
 		datasets = (await getDataset(type)).map((dataset) => ({
 			...dataset,
-			data: dataset.data.map((i) => ({ ...i, y: i.y * (+area || 1) }))
+			data: dataset.data.map(({x,y}) => ({ x, y: y * (+area || 1) }))
 		}));
 	}
 
@@ -73,9 +73,9 @@
 						x: {
 							type: 'time',
 							time: {
-								parser: 'yyyy-mm-dd',
+								parser: 'yyyy-MM-dd',
 								unit: 'month',
-								displayFormats: { day: 'DD MMM', quarter: 'MMM YYYY' }
+								displayFormats: { quarter: 'MMM YYYY' }
 							}
 						},
 						y: {
@@ -86,7 +86,8 @@
 						tooltip: {
 							callbacks: {
 								title: (i) => {
-									const d = dayjs(i[0].label, 'YYYY-MM-DD');
+									// @ts-ignore -- bad types from chart.js
+									const d = dayjs(i[0].raw.x, 'YYYY-MM-DD');
 									return d.format('DD MMMM' + (dayjs().isSame(d, 'year') ? '' : ' YYYY'));
 								},
 								label: (i) => {
