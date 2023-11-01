@@ -100,7 +100,7 @@
 						legend: {
 							onClick: (e, item, legend) => {
 								const idx = item.datasetIndex;
-								if (!idx) return;
+								if (idx === undefined) return;
 
 								const ci = legend.chart;
 								const savedLegend = JSON.parse(
@@ -110,6 +110,8 @@
 								const districtName = item.text;
 								// @ts-ignore -- bad types from chart.js
 								const districtId = District[districtName];
+
+								console.log(districtId)
 
 								if (ci.isDatasetVisible(idx)) {
 									ci.hide(idx);
