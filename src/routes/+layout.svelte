@@ -25,7 +25,7 @@
 </script>
 
 <div data-scheme={$colorScheme}>
-	<main class="h-screen bg-slate-50 dark:bg-slate-900 p-4">
+	<main class="h-screen bg-slate-50 dark:bg-slate-900 dark:text-slate-50 p-4">
 		<header class="flex justify-end items-center gap-4">
 			<a
 				href="https://github.com/bushaev-denis/list-apartments-history-dashboard"

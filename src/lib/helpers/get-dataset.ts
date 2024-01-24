@@ -1,4 +1,4 @@
-import { PUBLIC_DATA_FILE_PATH } from '$env/static/public';
+import { PUBLIC_GH_REPO_URL, PUBLIC_DATA_FILE_NAME } from '$env/static/public';
 import { AvgType, District } from '$lib/types';
 
 type Dataset = {
@@ -8,7 +8,7 @@ type Dataset = {
 };
 
 export async function getDataset(type: AvgType) {
-	const res = await fetch(PUBLIC_DATA_FILE_PATH);
+	const res = await fetch(`${PUBLIC_GH_REPO_URL}/${PUBLIC_DATA_FILE_NAME}`);
 
 	if (!res.ok) {
 		throw new Error(res.statusText);

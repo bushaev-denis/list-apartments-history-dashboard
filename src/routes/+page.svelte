@@ -9,6 +9,7 @@
 	import 'dayjs/locale/ru';
 	import Input from '$lib/components/input.svelte';
 	import { onMount } from 'svelte';
+	import Log from '$lib/components/log.svelte';
 	dayjs.extend(customParseFormat);
 	dayjs.locale('ru');
 
@@ -123,4 +124,5 @@
 			/>
 		{/if}
 	</div>
+	<Log />
 </div>
